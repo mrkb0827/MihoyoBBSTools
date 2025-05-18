@@ -42,6 +42,6 @@ jobs:
                   yaml.dump(cfg, out_f, allow_unicode=True, sort_keys=False)
               print(f"Generated {output_path}")
           EOF
-#      - name: Run main_multi.py
-#        run: python main_multi.py
+      - name: Run main_multi.py
+        run: python main_multi.py
 

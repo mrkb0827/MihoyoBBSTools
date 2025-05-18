@@ -33,7 +33,7 @@ jobs:
               cfg = copy.deepcopy(template)
               env_name = section.upper() + "_COOKIE"
               cookie_value = os.environ.get(env_name, "")
-              cfg["account"]["cookie"] = cookie_value
+              cfg["account"]["cookie"] = yaml.safe_dump(cookie_value, default_style='"')
               for game, flag in parser[section].items():
                   if game in cfg.get("games", {}).get("cn", {}):
                      cfg["games"]["cn"][game]["checkin"] = (flag.strip() == "1")
@@ -41,10 +41,6 @@ jobs:
               with open(output_path, "w", encoding="utf-8") as out_f:
                   yaml.dump(cfg, out_f, allow_unicode=True, sort_keys=False)
               print(f"Generated {output_path}")
-              with open(output_path, "r", encoding="utf-8") as out_f:
-                  print(out_f.read())
-              print("====================\n")
-
           EOF
 #      - name: Run main_multi.py
 #        run: python main_multi.py

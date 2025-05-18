@@ -7,8 +7,8 @@ jobs:
   run-main:
     runs-on: ubuntu-latest
     env:
-      USER1_COOKIE: ${{ secrets.user1 }}
-      USER2_COOKIE: ${{ secrets.user2 }}
+      USER1_COOKIE: ${{ secrets.USER1_COOKIE }}
+      USER2_COOKIE: ${{ secrets.USER2_COOKIE }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

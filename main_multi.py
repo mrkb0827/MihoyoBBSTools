@@ -50,7 +50,7 @@ def main_multi(autorun: bool):
         log.info(f"已搜索到 {len(config_list)} 个配置文件，正在开始执行！")
     else:
         log.info(f"已搜索到 {len(config_list)} 个配置文件，请确认是否无多余文件！\r\n{config_list}")
-        if not is_github_actions():
+        if os.getenv('GITHUB_ACTIONS') != 'true':
             try:
                 input("请输入回车继续，需要重新搜索配置文件请 Ctrl+C 退出脚本")
             except KeyboardInterrupt:

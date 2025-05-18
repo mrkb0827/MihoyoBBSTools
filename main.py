@@ -28,12 +28,8 @@ class StatusCode(Enum):
 def check_github_actions() -> None:
     """检查是否在GitHub Actions环境运行"""
     if os.getenv('GITHUB_ACTIONS') == 'true':
-        log.error("请不要在 GitHub Action 运行本项目")
-        exit(0)
-
-
-def initialize_config() -> Tuple[bool, Optional[str]]:
-    """初始化配置"""
+        print("请不要在 GitHub Action 运行本项目")
+    # 初始化，加载配置
     config.load_config()
     if not config.config["enable"]:
         log.warning("Config 未启用！")

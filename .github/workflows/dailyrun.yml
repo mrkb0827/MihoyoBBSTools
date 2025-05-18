@@ -1,0 +1,47 @@
+name: Daily Run
+on:
+  schedule:
+    - cron: "15 16 * * *"
+  workflow_dispatch:
+jobs:
+  run-main:
+    runs-on: ubuntu-latest
+    env:
+      USER1_COOKIE: ${{ secrets.user1 }}
+      USER2_COOKIE: ${{ secrets.user2 }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Generate user config files
+        shell: bash
+        run: |
+          python - << 'EOF'
+          import os, copy, configparser, yaml
+          ini_path = "config/user.ini"
+          parser = configparser.ConfigParser()
+          parser.optionxform = str
+          parser.read(ini_path, encoding="utf-8")
+          with open("config/config.yaml.example", "r", encoding="utf-8") as f:
+              template = yaml.safe_load(f)
+          for section in parser.sections():
+              cfg = copy.deepcopy(template)
+              env_name = section.upper() + "_COOKIE"
+              cookie_value = os.environ.get(env_name, "")
+              cfg["account"]["cookie"] = cookie_value
+              for game, flag in parser[section].items():
+                  if game in cfg.get("games", {}).get("cn", {}):
+                     cfg["games"]["cn"][game]["checkin"] = (flag.strip() == "1")
+              output_path = f"config/config_{section}.yaml"
+              with open(output_path, "w", encoding="utf-8") as out_f:
+                  yaml.dump(cfg, out_f, allow_unicode=True, sort_keys=False)
+              print(f"Generated {output_path}")
+          EOF
+      - name: Run main_multi.py
+        run: python main_multi.py
+

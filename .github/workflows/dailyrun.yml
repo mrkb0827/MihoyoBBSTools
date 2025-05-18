@@ -34,6 +34,7 @@ jobs:
               env_name = section.upper() + "_COOKIE"
               cookie_value = os.environ.get(env_name, "")
               cfg["account"]["cookie"] = yaml.safe_dump(cookie_value, default_style='"').strip('"')
+              print(f"DEBUG: Final cookie={repr(cookie_value)}")
               for game, flag in parser[section].items():
                   if game in cfg.get("games", {}).get("cn", {}):
                      cfg["games"]["cn"][game]["checkin"] = (flag.strip() == "1")
@@ -42,6 +43,6 @@ jobs:
                   yaml.dump(cfg, out_f, allow_unicode=True, sort_keys=False)
               print(f"Generated {output_path}")
           EOF
-      - name: Run main_multi.py
-        run: python main_multi.py
+#      - name: Run main_multi.py
+#        run: python main_multi.py
 

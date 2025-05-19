@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'mrkb0827'  # 限制只在 Fork 运行
     env:
-      CONFIG_JSON: ${{ toJson(secrets) }}
+      USER1_COOKIE: ${{ secrets.USER1_COOKIE }}
+      USER2_COOKIE: ${{ secrets.USER2_COOKIE }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -25,8 +26,7 @@ jobs:
         shell: bash
         run: |
           python - << 'EOF'
-          import os, json, copy, configparser, yaml
-          secrets_json = json.loads(os.environ["CONFIG_JSON"])
+          import os, copy, configparser, yaml
           ini_path = "config/user.ini"
           parser = configparser.ConfigParser()
           parser.optionxform = str
@@ -35,15 +35,12 @@ jobs:
               template = yaml.safe_load(f)
           for section in parser.sections():
               cfg = copy.deepcopy(template)
-              env_name = f"{section.upper()}_COOKIE"
+              env_name = section.upper() + "_COOKIE"
               cookie_value = str(os.environ.get(env_name, "")).replace("\n", "").strip()
               cfg["account"]["cookie"] = cookie_value
-              for key, value in parser[section].items():
-                  keys = key.split(".")
-                  ref = cfg
-                  for k in keys[:-1]:
-                      ref = ref.setdefault(k, {})                     
-                  ref[keys[-1]] = value.strip()
+              for game, flag in parser[section].items():
+                  if game in cfg.get("games", {}).get("cn", {}):
+                     cfg["games"]["cn"][game]["checkin"] = (flag.strip() == "1")
               output_path = f"config/config_{section}.yaml"
               with open(output_path, "w", encoding="utf-8") as out_f:
                   yaml.dump(cfg, out_f, allow_unicode=True, sort_keys=False)

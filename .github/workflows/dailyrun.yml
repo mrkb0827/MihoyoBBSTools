@@ -36,7 +36,7 @@ jobs:
           for section in parser.sections():
               cfg = copy.deepcopy(template)
               env_name = f"{section.upper()}_COOKIE"
-              cookie_value = str(os.environ.get(env_name, "")).replace("\n", "").strip()
+              cookie_value = f'"{str(os.environ.get(env_name, "").replace("\n", "").strip())}"'
               cfg["account"]["cookie"] = cookie_value
               for key, value in parser[section].items():
                   keys = key.split(".")
@@ -46,7 +46,7 @@ jobs:
                   ref[keys[-1]] = value.strip()
               output_path = f"config/config_{section}.yaml"
               with open(output_path, "w", encoding="utf-8") as out_f:
-                  yaml.dump(cfg, out_f, allow_unicode=True, sort_keys=False)
+                  yaml.dump(cfg, out_f, allow_unicode=True, sort_keys=False, default_flow_style=False)
               print(f"Generated {output_path}")
               with open(output_path, "r", encoding="utf-8") as out_f:
                   print(out_f.read())

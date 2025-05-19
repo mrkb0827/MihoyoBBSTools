@@ -128,15 +128,15 @@ class GameCheckin:
         for account in self.account_list:
             if account[1] in config.config["games"]["cn"][self.game_mid]["black_list"]:
                 continue
-            log.info(f"正在为{self.player_name}「{account[0]}」进行签到...")
+            log.info(f"正在进行签到...")
             time.sleep(random.randint(2, 8))
             is_data = self.is_sign(region=account[2], uid=account[1])
             if is_data.get("first_bind", False):
-                log.warning(f"{self.player_name}「{account[0]}」是第一次绑定米游社，请先手动签到一次")
+                log.warning(f"第一次绑定米游社，请先手动签到一次")
                 continue
             sign_days = is_data["total_sign_day"] - 1
             if is_data["is_sign"]:
-                log.info(f"{self.player_name}「{account[0]}」今天已经签到过了~\r\n今天获得的奖"
+                log.info(f"今天已经签到过了~\r\n今天获得的奖"
                          f"励是{tools.get_item(self.checkin_rewards[sign_days])}")
                 sign_days += 1
             else:
@@ -146,12 +146,12 @@ class GameCheckin:
                     data = req.json()
                     if data["retcode"] == 0 and data["data"]["success"] == 0:
                         log.info(
-                            f"{self.player_name}「{account[0]}」签到成功~\r\n今天获得的奖励是"
+                            f"签到成功~\r\n今天获得的奖励是"
                             f"{tools.get_item(self.checkin_rewards[0 if sign_days == 0 else sign_days + 1])}")
                         sign_days += 2
                     elif data["retcode"] == -5003:
                         log.info(
-                            f"{self.player_name}{account[0]}今天已经签到过了~\r\n今天获得的奖励是"
+                            f"今天已经签到过了~\r\n今天获得的奖励是"
                             f"{tools.get_item(self.checkin_rewards[sign_days])}")
                     else:
                         s = "账号签到失败！"

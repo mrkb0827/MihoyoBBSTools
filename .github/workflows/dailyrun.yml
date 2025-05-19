@@ -48,7 +48,11 @@ jobs:
               with open(output_path, "w", encoding="utf-8") as out_f:
                   yaml.dump(cfg, out_f, allow_unicode=True, sort_keys=False)
               print(f"Generated {output_path}")
+              with open(output_path, "r", encoding="utf-8") as out_f:
+                  print(out_f.read())
+              print("====================\n")
+
           EOF
-      - name: Run main_multi.py
-        run: python main_multi.py
+      #- name: Run main_multi.py
+      #  run: python main_multi.py
 

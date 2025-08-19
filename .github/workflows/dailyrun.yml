@@ -15,6 +15,8 @@ jobs:
       USER2_COOKIE: ${{ secrets.USER2_COOKIE }}
       USER1_STOKEN: ${{ secrets.USER1_STOKEN }}
       USER2_STOKEN: ${{ secrets.USER2_STOKEN }}
+      USER1_MID: ${{ secrets.USER1_MID }}
+      USER2_MID: ${{ secrets.USER2_MID }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -37,7 +39,7 @@ jobs:
               template = yaml.safe_load(f)
           for section in parser.sections():
               cfg = copy.deepcopy(template)
-              for key in ["cookie", "stoken"]:
+              for key in ["cookie", "stoken", "mid"]:
                   env_var = f"{section.upper()}_{key.upper()}"
                   value = str(os.environ.get(env_var, "")).replace("\n", "").strip()
                   cfg["account"][key] = value

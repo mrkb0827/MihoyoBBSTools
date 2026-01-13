@@ -1,15 +1,20 @@
 name: Daily Run
+
 on:
   push:
     branches:
       - "master"
   schedule:
     - cron: "15 16 * * *"
-  workflow_dispatch:  # 仅手动触发，不会影响上游
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
 jobs:
   run-main:
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'mrkb0827'  # 限制只在 Fork 运行
+    if: github.repository_owner == 'mrkb0827'
     env:
       USER1_COOKIE: ${{ secrets.USER1_COOKIE }}
       USER2_COOKIE: ${{ secrets.USER2_COOKIE }}
@@ -17,15 +22,19 @@ jobs:
       USER2_STOKEN: ${{ secrets.USER2_STOKEN }}
       USER1_MID: ${{ secrets.USER1_MID }}
       USER2_MID: ${{ secrets.USER2_MID }}
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.x"
+
       - name: Install dependencies
         run: pip install -r requirements.txt
+
       - name: Generate user config files
         shell: bash
         run: |
@@ -51,6 +60,11 @@ jobs:
                   yaml.dump(cfg, out_f, allow_unicode=True, sort_keys=False)
               print(f"Generated {output_path}")
           EOF
+
       - name: Run main_multi.py
         run: python main_multi.py
 
+      - name: Keepalive Workflow
+        uses: gautamkrishnar/keepalive-workflow@v1
+        with:
+          use_api: false

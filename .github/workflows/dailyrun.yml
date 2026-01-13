@@ -8,6 +8,9 @@ on:
     - cron: "15 16 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   run-main:
     runs-on: ubuntu-latest
@@ -23,6 +26,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -61,5 +66,21 @@ jobs:
       - name: Run main_multi.py
         run: python main_multi.py
 
-      - name: Keepalive Workflow
-        uses: gautamkrishnar/keepalive-workflow@v1
+      - name: Auto Keepalive
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          
+          last_commit_date=$(git log -1 --format=%ct)
+          now=$(date +%s)
+          days_diff=$(( ($now - $last_commit_date) / 86400 ))
+          
+          echo "Days since last commit: $days_diff"
+          
+          if [ $days_diff -gt 50 ]; then
+            echo "No activity for 50 days. Committing to keep workflow alive..."
+            git commit --allow-empty -m "Automated keepalive commit [skip ci]"
+            git push
+          else
+            echo "Repository is active. No keepalive commit needed."
+          fi
